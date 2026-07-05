@@ -1291,6 +1291,10 @@ function renderStep() {
   const level = gameState.currentLevel;
   const step = level.steps[gameState.currentStep];
 
+  // Shuffle choices for this step
+  step.shuffledChoices = shuffleArray(step.choices);
+  step.correctIndex = step.shuffledChoices.findIndex(c => c.correct);
+
   document.getElementById('stepCounter').textContent = `Step ${gameState.currentStep + 1} of ${level.steps.length}`;
   document.getElementById('stepTitle').textContent = step.title;
   document.getElementById('hintText').textContent = step.hint;
@@ -1303,7 +1307,7 @@ function renderStep() {
   container.innerHTML = '';
 
   const letters = ['A', 'B', 'C', 'D'];
-  step.choices.forEach((choice, i) => {
+  step.shuffledChoices.forEach((choice, i) => {
     const btn = document.createElement('button');
     btn.className = 'choice-btn';
     btn.innerHTML = `<span class="choice-letter">${letters[i]}</span><span>${choice.text}</span>`;
@@ -1325,7 +1329,7 @@ function showHint() {
 function selectChoice(index, btnElement) {
   const level = gameState.currentLevel;
   const step = level.steps[gameState.currentStep];
-  const choice = step.choices[index];
+  const choice = step.shuffledChoices[index];
   const allBtns = document.querySelectorAll('.choice-btn');
 
   // Disable all buttons
@@ -1362,7 +1366,7 @@ function selectChoice(index, btnElement) {
     gameState.streak = 0;
 
     // Highlight correct answer
-    step.choices.forEach((c, i) => {
+    step.shuffledChoices.forEach((c, i) => {
       if (c.correct) allBtns[i].classList.add('correct');
     });
 
